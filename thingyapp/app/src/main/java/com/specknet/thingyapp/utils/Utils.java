@@ -15,6 +15,7 @@ public class Utils {
     private static ArrayList<Long> frequencyTimestampsPhone = new ArrayList<>();
 
     public static void processThingyPacket(final byte[] values, BluetoothService bltService) {
+        // got rid of respeck version check
         long currentProcessedMinute;
         int currentSequenceNumberInBatch = 0;
 
@@ -37,6 +38,8 @@ public class Utils {
         long interpolatedPhoneTimestamp = (long) ((mPhoneTimestampCurrentPacketReceived - mPhoneTimestampLastPacketReceived) *
                 (currentSequenceNumberInBatch * 1. / Constants.NUMBER_OF_SAMPLES_PER_BATCH)) + mPhoneTimestampLastPacketReceived;
 
+        // for loop removed as data comes in 1 by 1
+        // combine 2 seperate bytes into 1 16 bit integer
         final float x = combineAccelerationBytes(values[0], values[1]);
         final float y = combineAccelerationBytes(values[2], values[3]);
         final float z = combineAccelerationBytes(values[4], values[5]);
@@ -57,6 +60,7 @@ public class Utils {
     private static float combineAccelerationBytes(Byte lower, Byte upper) {
         short unsigned_lower = (short) (lower & 0xFF);
         short value = (short) ((upper << 8) | unsigned_lower);
+        // Done in Nordic-Thingy repo (assuming for scaling)
         return (float) (value) / (1 << 10);
     }
 

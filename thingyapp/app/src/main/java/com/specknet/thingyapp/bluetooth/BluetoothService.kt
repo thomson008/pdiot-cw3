@@ -19,8 +19,9 @@ val CHARACTERISTIC_UUID = UUID(-0x1097fbf964cab6cdL, -0x64efad00568bffbeL)
 
 class BluetoothService : Service() {
 
+    // change variable names for readability
     lateinit var rxBleClient: RxBleClient
-    lateinit var respeckUUID: String
+    lateinit var thingyUUID: String
 
     var thingyDevice: RxBleDevice? = null
     var thingyFound = false
@@ -33,8 +34,8 @@ class BluetoothService : Service() {
 
         // this will always exist because the service is going to be started only after the respeck has been scanned
         val sharedPreferences = getSharedPreferences(Constants.PREFERENCES_FILE, Context.MODE_PRIVATE)
-        respeckUUID = sharedPreferences.getString(Constants.RESPECK_MAC_ADDRESS_PREF, "").toString()
-        Log.d("CHECKID", respeckUUID)
+        thingyUUID = sharedPreferences.getString(Constants.RESPECK_MAC_ADDRESS_PREF, "").toString()
+        Log.d("CHECKID", thingyUUID)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -54,7 +55,7 @@ class BluetoothService : Service() {
                     if(thingyFound) {
                         scanDisposable.dispose()
                     }
-                    onScanSuccess(it, respeckUUID)
+                    onScanSuccess(it, thingyUUID)
                 }, {onScanFailure(it)})
         }.start()
 
