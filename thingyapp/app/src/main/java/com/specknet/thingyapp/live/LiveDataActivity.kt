@@ -1,4 +1,4 @@
-package com.specknet.pdiotapp.live
+package com.specknet.thingyapp.live
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -17,11 +17,10 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import com.specknet.pdiotapp.utils.DelayRespeck
-import com.specknet.pdiotapp.R
-import com.specknet.pdiotapp.live.Model.getPrediction
-import com.specknet.pdiotapp.utils.RespeckData
-import com.specknet.pdiotapp.utils.Constants
+import com.specknet.thingyapp.utils.DelayRespeck
+import com.specknet.thingyapp.R
+import com.specknet.thingyapp.utils.RespeckData
+import com.specknet.thingyapp.utils.Constants
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.DelayQueue
 import kotlin.collections.ArrayList
@@ -42,7 +41,6 @@ class LiveDataActivity : AppCompatActivity() {
     var time = 0f
     lateinit var allAccelData: LineData
     lateinit var chart: LineChart
-    lateinit var predictedActivity: String
 
     // global broadcast receiver so we can unregister it
     lateinit var respeckLiveUpdateReceiver: BroadcastReceiver
@@ -58,7 +56,6 @@ class LiveDataActivity : AppCompatActivity() {
         var accel_x = findViewById<TextView>(R.id.breathing_rate_sec)
         var accel_y = findViewById<TextView>(R.id.breathing_rate_min)
         var accel_z = findViewById<TextView>(R.id.breathing_signal)
-        var prediction = findViewById<TextView>(R.id.prediction)
 
 
         setupChart()
@@ -96,13 +93,11 @@ class LiveDataActivity : AppCompatActivity() {
                         )
                     mDelayRespeckQueue.add(delayRespeck)
 
-                    predictedActivity = getPrediction(data)
 
                     runOnUiThread {
                         accel_x.text = "accel_x = " + x.toString()
                         accel_y.text = "accel_y = " + y.toString()
                         accel_z.text = "accel_z = " + z.toString()
-                        prediction.text = "Activity: " + predictedActivity
                     }
 
                     time += 1
@@ -186,8 +181,6 @@ class LiveDataActivity : AppCompatActivity() {
         }
 
     }
-
-
 
 
     override fun onDestroy() {
