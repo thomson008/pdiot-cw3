@@ -12,7 +12,7 @@ import com.polidea.rxandroidble2.scan.ScanResult
 import com.polidea.rxandroidble2.scan.ScanSettings
 import com.specknet.harapp.utils.Constants
 import com.specknet.harapp.utils.Utils.bytesToHex
-import com.specknet.harapp.utils.Utils.processRESpeckPacket
+import com.specknet.harapp.utils.Utils.processPacket
 import io.reactivex.disposables.Disposable
 import java.util.*
 
@@ -87,7 +87,6 @@ class BluetoothService : Service() {
     }
 
     fun connectToRespeck() {
-
         // first we want to observe the connection state changes
         val connectionStateChangesObservable = respeckDevice?.observeConnectionStateChanges()
             ?.subscribe({
@@ -103,9 +102,17 @@ class BluetoothService : Service() {
 
         val connectionObservable = respeckDevice?.establishConnection(false)
         var interval = 0
-        respeckLiveSubscription = connectionObservable?.flatMap { it.setupNotification(
-            UUID.fromString(
-            Constants.RESPECK_CHARACTERISTIC_UUID)) }
+
+        val charUUID: UUID
+        var deviceType = "RESPECK"
+        charUUID = if (respeckDevice?.name == "Res6AH")
+            UUID.fromString(Constants.RESPECK_CHARACTERISTIC_UUID)
+        else {
+            deviceType = "THINGY"
+            UUID(-0x1097fbf964cab6cdL, -0x64efad00568bffbeL)
+        }
+
+        respeckLiveSubscription = connectionObservable?.flatMap { it.setupNotification(charUUID) }
             ?.doOnNext{
                 Log.i("ble", "Subscribed to Respeck")
                 val respeckFoundIntent = Intent(Constants.ACTION_RESPECK_CONNECTED)
@@ -114,7 +121,7 @@ class BluetoothService : Service() {
 
             ?.flatMap { it }
             ?.subscribe({
-                processRESpeckPacket(it, respeckVersion, this)
+                processPacket(it, respeckVersion, deviceType, this)
                 val respeckFoundIntent = Intent(Constants.ACTION_RESPECK_CONNECTED)
                 sendBroadcast(respeckFoundIntent)
                 Log.i("brd", "sent the connected broadcast")

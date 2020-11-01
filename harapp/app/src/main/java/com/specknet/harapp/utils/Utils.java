@@ -9,6 +9,7 @@ import com.specknet.harapp.bluetooth.BluetoothService;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.concurrent.TimeUnit;
 
 public class Utils {
 
@@ -25,6 +26,42 @@ public class Utils {
         return new String(hexChars);
     }
 
+    public static void processPacket(final byte[] values, int respeckVersion, String deviceType, BluetoothService bltService) {
+        if (deviceType.equals("RESPECK"))
+            processRESpeckPacket(values, respeckVersion, bltService);
+        else
+            processThingyPacket(values, bltService);
+    }
+
+    public static void processThingyPacket(final byte[] values, BluetoothService bltService) {
+        long currentProcessedMinute;
+        int currentSequenceNumberInBatch = 0;
+
+        long now = System.currentTimeMillis();
+
+        currentProcessedMinute = TimeUnit.MILLISECONDS.toMinutes(now);
+        Log.i("Debug", "current min = " + currentProcessedMinute);
+
+        long mPhoneTimestampLastPacketReceived = -1;
+        long mPhoneTimestampCurrentPacketReceived = -1;
+        long interpolatedPhoneTimestamp = (long) ((mPhoneTimestampCurrentPacketReceived - mPhoneTimestampLastPacketReceived) *
+                (currentSequenceNumberInBatch * 1. / Constants.NUMBER_OF_SAMPLES_PER_BATCH)) + mPhoneTimestampLastPacketReceived;
+
+        final float x = getAccelerationFromThingy(values[0], values[1]);
+        final float y = getAccelerationFromThingy(values[2], values[3]);
+        final float z = getAccelerationFromThingy(values[4], values[5]);
+
+        Log.i("Debug", "(x = " + x + ", y = " + y + ", z = " + z + ")");
+
+        Intent liveDataIntent = new Intent(Constants.ACTION_INNER_RESPECK_BROADCAST);
+        liveDataIntent.putExtra(Constants.EXTRA_RESPECK_LIVE_X, x);
+        liveDataIntent.putExtra(Constants.EXTRA_RESPECK_LIVE_Y, y);
+        liveDataIntent.putExtra(Constants.EXTRA_RESPECK_LIVE_Z, z);
+        liveDataIntent.putExtra(Constants.EXTRA_INTERPOLATED_TS, interpolatedPhoneTimestamp);
+
+        bltService.sendBroadcast(liveDataIntent);
+    }
+
     public static void processRESpeckPacket(final byte[] values, int respeckVersion, BluetoothService bltService) {
         if(respeckVersion == 5) {
             byte[] time_array = {values[0], values[1], values[2], values[3]};
@@ -32,9 +69,6 @@ public class Utils {
             ByteBuffer buffer = ByteBuffer.wrap(time_array);
             buffer.order(ByteOrder.BIG_ENDIAN);
             buffer.position(0);
-            long uncorrectedRESpeckTimestamp = ((long) buffer.getInt()) & 0xffffffffL;
-
-            long newRESpeckTimestamp = uncorrectedRESpeckTimestamp * 197 * 1000 / 32768;
         }
 
         else if(respeckVersion == 6) {
@@ -67,11 +101,11 @@ public class Utils {
 
             // Read battery level and charging status
             byte battLevel  = values[6];
-            Log.i("RESpeckPacketHandler", "Respeck battery level: " + Byte.toString(battLevel) + "%");
+            Log.i("RESpeckPacketHandler", "Respeck battery level: " + battLevel + "%");
 
             boolean chargingStatus = false;
             if (values[7] == (byte)0x01) chargingStatus = true;
-            Log.i("RESpeckPacketHandler", "Respeck charging?: " + Boolean.toString(chargingStatus));
+            Log.i("RESpeckPacketHandler", "Respeck charging?: " + chargingStatus);
         }
 
         for (int i = 8; i < values.length; i += 6) {
@@ -88,7 +122,6 @@ public class Utils {
 
             bltService.sendBroadcast(liveDataIntent);
         }
-
     }
 
     private static float combineAccelerationBytes(Byte upper, Byte lower) {
@@ -97,8 +130,10 @@ public class Utils {
         return (value) / 16384.0f;
     }
 
-    public static long getUnixTimestamp() {
-        return System.currentTimeMillis();
+    private static float getAccelerationFromThingy(Byte lower, Byte upper) {
+        short unsigned_lower = (short) (lower & 0xFF);
+        short value = (short) ((upper << 8) | unsigned_lower);
+        return (float) (value) / (1 << 10);
     }
 
     public static boolean isServiceRunning(Class<?> serviceClass, Context context) {
@@ -112,7 +147,4 @@ public class Utils {
 
         return false;
     }
-
-
-
 }

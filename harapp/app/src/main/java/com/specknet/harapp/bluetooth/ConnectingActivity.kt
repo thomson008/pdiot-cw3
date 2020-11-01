@@ -141,9 +141,9 @@ class ConnectingActivity : AppCompatActivity() {
 
                 when(action) {
                     Constants.ACTION_RESPECK_CONNECTED -> respeckStatus.text =
-                        "Respeck status: Connected"
+                        "Device status: Connected"
                     Constants.ACTION_RESPECK_DISCONNECTED -> respeckStatus.text =
-                        "Respeck status: Disconnected"
+                        "Device status: Disconnected"
                     else -> respeckStatus.text = "Error"
                 }
             }
@@ -223,7 +223,7 @@ class ConnectingActivity : AppCompatActivity() {
                 "sharedpref",
                 "Already saw a respeckID, starting service and attempting to reconnect"
             )
-            respeckStatus.text = "Respeck status: Connecting..."
+            respeckStatus.text = "Device status: Connecting..."
 
             // launch service to reconnect
             // start the bluetooth service if it's not already running
@@ -235,7 +235,7 @@ class ConnectingActivity : AppCompatActivity() {
         }
         else {
             Log.i("sharedpref", "No Respeck seen before, must pair first")
-            respeckStatus.text = "Respeck status: Unpaired"
+            respeckStatus.text = "Device status: Unpaired"
         }
     }
 

@@ -16,6 +16,8 @@ public class Constants {
     public static final String PREFERENCES_FILE = "com.specknet.pdiotapp.PREFERENCE_FILE";
     public static final String RESPECK_MAC_ADDRESS_PREF = "respeck_id_pref";
     public static final String RESPECK_VERSION = "respeck_version";
+    public static final int NUMBER_OF_SAMPLES_PER_BATCH = 32;
+    public static final String EXTRA_INTERPOLATED_TS = "interpolated_timestamp";
 
     //The REQUEST_ENABLE_BT constant passed to startActivityForResult(android.content.Intent, int)
     // is a locally-defined integer (which must be greater than 0) that the system passes back

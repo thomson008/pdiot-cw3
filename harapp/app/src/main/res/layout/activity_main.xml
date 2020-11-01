@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20px"
             android:layout_marginRight="20px"
-            android:text="Respeck status: Disconnected"
+            android:text="Device status: Disconnected"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -64,11 +64,11 @@
 
         <Button
             android:id="@+id/ble_button"
-            android:layout_width="450px"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="100px"
             android:layout_marginBottom="100px"
-            android:text="Connect respeck"
+            android:text="Connect respeck/thingy"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"

@@ -107,8 +107,8 @@ class MainActivity : AppCompatActivity() {
                 val action = intent.action
 
                 when(action) {
-                    Constants.ACTION_RESPECK_CONNECTED -> respeckStatus.text = "Respeck status: Connected"
-                    Constants.ACTION_RESPECK_DISCONNECTED -> respeckStatus.text = "Respeck status: Disconnected"
+                    Constants.ACTION_RESPECK_CONNECTED -> respeckStatus.text = "Device status: Connected"
+                    Constants.ACTION_RESPECK_DISCONNECTED -> respeckStatus.text = "Device status: Disconnected"
                     else -> respeckStatus.text = "Error"
                 }
             }
@@ -192,7 +192,7 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences(Constants.PREFERENCES_FILE, Context.MODE_PRIVATE)
         if (sharedPreferences.contains(Constants.RESPECK_MAC_ADDRESS_PREF)) {
             Log.i("sharedpref", "Already saw a respeckID, starting service and attempting to reconnect")
-            respeckStatus.text = "Respeck status: Connecting..."
+            respeckStatus.text = "Device status: Connecting..."
 
             // launch service to reconnect
             // start the bluetooth service if it's not already running
@@ -204,7 +204,7 @@ class MainActivity : AppCompatActivity() {
         }
         else {
             Log.i("sharedpref", "No Respeck seen before, must pair first")
-            respeckStatus.text = "Respeck status: Unpaired"
+            respeckStatus.text = "Device status: Unpaired"
         }
     }
 
