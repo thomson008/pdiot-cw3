@@ -10,6 +10,8 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.charts.LineChart
@@ -43,6 +45,9 @@ class LiveDataActivity : AppCompatActivity() {
     lateinit var allAccelData: LineData
     lateinit var chart: LineChart
     lateinit var predictedActivity: String
+    lateinit var predictionConfidence: String
+
+    private lateinit var startButton: ImageButton
 
     // global broadcast receiver so we can unregister it
     lateinit var respeckLiveUpdateReceiver: BroadcastReceiver
@@ -59,8 +64,22 @@ class LiveDataActivity : AppCompatActivity() {
         var accel_y = findViewById<TextView>(R.id.breathing_rate_min)
         var accel_z = findViewById<TextView>(R.id.breathing_signal)
         var prediction = findViewById<TextView>(R.id.prediction)
+        var confidence = findViewById<TextView>(R.id.confidence)
 
+        startButton = findViewById(R.id.start_button)
+        var started = false
 
+        startButton.setOnClickListener {
+            started = !started
+            if (!started) {
+                startButton.setBackgroundResource(R.drawable.button_bg_round)
+                startButton.setImageResource(R.drawable.vd_play)
+            }
+            else {
+                startButton.setBackgroundResource(R.drawable.button_bg_round2)
+                startButton.setImageResource(R.drawable.vd_pause)
+            }
+        }
         setupChart()
 
         // set up the broadcast receiver
@@ -71,7 +90,7 @@ class LiveDataActivity : AppCompatActivity() {
 
                 val action = intent.action
 
-                if (action == Constants.ACTION_INNER_RESPECK_BROADCAST) {
+                if (action == Constants.ACTION_INNER_RESPECK_BROADCAST && started) {
 
                     // get all relevant intent contents
                     val x = intent.getFloatExtra(Constants.EXTRA_RESPECK_LIVE_X, 0f)
@@ -96,13 +115,17 @@ class LiveDataActivity : AppCompatActivity() {
                         )
                     mDelayRespeckQueue.add(delayRespeck)
 
-                    predictedActivity = getPrediction(data)
+                    val predictionWithConfidence = getPrediction(data)
+
+                    predictedActivity = predictionWithConfidence[0]
+                    predictionConfidence = predictionWithConfidence[1]
 
                     runOnUiThread {
                         accel_x.text = "accel_x = " + x.toString()
                         accel_y.text = "accel_y = " + y.toString()
                         accel_z.text = "accel_z = " + z.toString()
                         prediction.text = "Activity: " + predictedActivity
+                        confidence.text = predictionConfidence + "%"
                     }
 
                     time += 1
@@ -186,9 +209,6 @@ class LiveDataActivity : AppCompatActivity() {
         }
 
     }
-
-
-
 
     override fun onDestroy() {
         super.onDestroy()
