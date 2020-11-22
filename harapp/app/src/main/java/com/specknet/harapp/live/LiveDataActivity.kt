@@ -10,7 +10,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
-import android.widget.Button
+import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -28,8 +28,6 @@ import java.util.concurrent.BlockingQueue
 import java.util.concurrent.DelayQueue
 import kotlin.collections.ArrayList
 import kotlin.math.sqrt
-
-
 
 class LiveDataActivity : AppCompatActivity() {
 
@@ -58,6 +56,7 @@ class LiveDataActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_live_data)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         // get the accel fields
         var accel_x = findViewById<TextView>(R.id.breathing_rate_sec)

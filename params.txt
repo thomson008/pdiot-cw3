@@ -1,0 +1,8 @@
+Model: Keras Sequential, using a 7 layer convolutional neural network.
+        Input shape: (50, 3)
+        Output shape: 14
+        Prediction accuracy: 91%
+Memory usage: avg. 115 MB
+CPU usage: avg. 9%, 21 threads
+Power consumption: 5% of battery = 225mAh -> Battery voltage is 4.2 V, so energy used is 4.2V * 225mAh = 945mWh. This gives power consumption of 945mWh / 3600s = 0.26mW = 260 uW (micro watts) 
+Communication latency: 386 ms
