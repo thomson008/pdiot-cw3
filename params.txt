@@ -1,6 +1,6 @@
 Model: Keras Sequential, using a 7 layer convolutional neural network.
         Input shape: (50, 3)
-        Output shape: 14
+        Output shape: 13
         Prediction accuracy: 91%
 Memory usage: avg. 115 MB
 CPU usage: avg. 9%, 21 threads
