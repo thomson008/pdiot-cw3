@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
     var isUserFirstTime = false
 
     private fun loadModelFile(): ByteBuffer {
-        val fileName = "model.tflite"
+        val fileName = "model_movement.tflite"
         val assetFileDescriptor: AssetFileDescriptor = assets.openFd(fileName)
         val fileInputStream = FileInputStream(assetFileDescriptor.fileDescriptor)
         val fileChannel: FileChannel = fileInputStream.channel
